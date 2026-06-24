@@ -5,22 +5,31 @@
 // de la classe configurée lors de l'entraînement dans Teachable Machine.
 // ============================================================================
 const database = {
-    "chat_pixel": {
-        title: "Le Chat Roux",
-        desc: "Un magnifique petit chat assis, réalisé entièrement avec des carrés de papier mosaïque multicolores.",
-        avatar: "🐱",         // L'émoji ou icône affiché sur la carte verrouillée/déverrouillée
-        author: "Léo",        // Prénom de l'enfant
-        classLevel: "CM1",    // Sa classe
-        date: "Mai 2026"      // Date de création du dessin
+    "test1": {
+        title: "crane ",
+        desc: "crane un peu moche c'est un test",
+        avatar: "💀",         // L'émoji ou icône affiché sur la carte verrouillée/déverrouillée
+        author: "jsp qui",        // Prénom de l'enfant
+        classLevel: "chepa au pif",    // Sa classe
+        date: "une anné"      // Date de création du dessin
     },
-    "maison_pixel": {
-        title: "La Maison Mystérieuse",
-        desc: "Une grande maison d'allure ancienne faite à la peinture au pochoir pixel art.",
-        avatar: "🏠",
-        author: "Emma",
-        classLevel: "CE2",
-        date: "Octobre 2025"
+    "test2": {
+        title: "Stitch ",
+        desc: "Statut de stitch peinte oep tjr un test",
+        avatar: "🐶",
+        author: "un boug random",
+        classLevel: "lezzzgoo",
+        date: "uneeeee annnééé"
+    },
+        "test3": {
+            title: "Bulbizarreee",
+            desc: "un pokemon mon garssss WOWOWOWWOO",
+            avatar: "🌵",
+            author: "je sais tjr pas",
+            classLevel: "j'aimerais savoir",
+            date: "we are ch.... NAAAANN"
     }
+
 };
 
 // ============================================================================
