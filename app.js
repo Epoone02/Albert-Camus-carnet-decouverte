@@ -8,7 +8,7 @@ const database = {
     "test1": {
         title: "crane ",
         desc: "crane un peu moche c'est un test",
-        avatar: "💀",         // L'émoji ou icône affiché sur la carte verrouillée/déverrouillée
+        avatar: "image/crane.jpg",         // L'émoji ou icône affiché sur la carte verrouillée/déverrouillée
         author: "jsp qui",        // Prénom de l'enfant
         classLevel: "chepa au pif",    // Sa classe
         date: "une anné"      // Date de création du dessin
@@ -16,7 +16,7 @@ const database = {
     "test2": {
         title: "Stitch ",
         desc: "Statut de stitch peinte oep tjr un test",
-        avatar: "🐶",
+        avatar: "image/stitch.jpg",
         author: "un boug random",
         classLevel: "lezzzgoo",
         date: "uneeeee annnééé"
@@ -24,7 +24,7 @@ const database = {
         "test3": {
             title: "Bulbizarreee",
             desc: "un pokemon mon garssss WOWOWOWWOO",
-            avatar: "🌵",
+            avatar: "image/bulbizare.jpg",
             author: "je sais tjr pas",
             classLevel: "j'aimerais savoir",
             date: "we are ch.... NAAAANN"
@@ -68,7 +68,7 @@ function generateGrid() {
         card.className = 'card locked'; // Verrouillée par défaut (grisée)
         card.id = `item-${id}`;
         card.innerHTML = `
-            <div class="pixel-avatar">${data.avatar}</div>
+            <img src="${data.avatar}" alt="Icône" class="custom-avatar">
             <h3>${data.title}</h3>
             <span class="status">Inconnu</span>
         `;
