@@ -1,7 +1,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #1a1a1a; color: #fff; padding: 15px; text-align: center; }
 
-header { margin-bottom: 25px; background: #3e8bff; padding: 15px; border-radius: 10px; box-shadow: 0 4px 15px rgba(255,62,62,0.4); }
+header { margin-bottom: 25px; background: #3e8bff; padding: 15px; border-radius: 10px; box-shadow: 0 4px 15px rgba(62, 117, 255, 0.4); }
 h1 { font-size: 24px; margin-bottom: 5px; }
 #score { font-weight: bold; font-size: 14px; background: rgba(0,0,0,0.2); display: inline-block; padding: 5px 10px; border-radius: 15px; }
 
