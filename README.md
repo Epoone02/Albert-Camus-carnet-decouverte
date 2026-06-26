@@ -1,52 +1,100 @@
-# Pokédex Communal — README
+# 🎨 Carnet de Découvertes — Projet Albert Camus
 
-## Structure du projet
+> Une application hybride Web/Android qui transforme les œuvres des élèves en une collection numérique interactive, débloquée par reconnaissance d'image en temps réel.
+
+---
+
+## ✨ Fonctionnalités
+
+### 🧠 Reconnaissance IA
+Pointe la caméra vers une œuvre physique — l'app l'identifie instantanément grâce à un modèle *Teachable Machine* (TensorFlow.js) et la débloque dans le carnet.
+
+### 📚 Carnet de Collection
+Chaque œuvre débloquée révèle sa fiche complète : nom de l'élève, classe, date de création et description. La progression est sauvegardée automatiquement sur l'appareil.
+
+### 🎨 Atelier Pixel Art
+Un éditeur de dessin 10×10 intégré. Les élèves peuvent créer, colorier et sauvegarder leurs propres projets directement dans l'app.
+
+### 🌈 Thèmes Personnalisés
+4 thèmes prédéfinis (Bleu Azur, Sombre, Violet Galaxie, Vert Nature) + création d'un thème sur-mesure via curseurs HSL.
+
+### 🏆 Gamification
+Barre de progression, compteur de découvertes et écran de victoire à la collection complète.
+
+---
+
+## 🛠️ Architecture Technique
 
 ```
-pokedex/
-├── index.html
-├── style.css
-├── app.js
-├── README.md
-└── model/              ← TU DOIS CRÉER CE DOSSIER
-    ├── model.json      ← exporté depuis Teachable Machine
-    ├── metadata.json   ← exporté depuis Teachable Machine
-    └── weights.bin     ← exporté depuis Teachable Machine
+Frontend (GitHub Pages)  ──►  Android WebView (Kotlin)
+       │
+       ├── HTML / CSS / Vanilla JS
+       ├── Modèle IA  →  /model/
+       └── Avatars    →  /image/
 ```
 
-## Étapes pour faire marcher la reconnaissance
+| Couche | Technologie |
+|---|---|
+| Interface | HTML5 · CSS3 · Vanilla JavaScript |
+| Reconnaissance | Teachable Machine + TensorFlow.js |
+| Hébergement | GitHub Pages |
+| Application mobile | Android Studio · Kotlin · WebView |
+| Persistance | `localStorage` navigateur |
 
-### 1. Entraîner le modèle sur Teachable Machine
-- Va sur https://teachablemachine.withgoogle.com
-- "Image Project" → "Standard image model"
-- Crée une classe par lieu avec le même nom que les clés dans `database` dans app.js :
-  - `mairie`
-  - `eglise`
-  - `parc`
-- Prends minimum 30 photos par classe dans les vraies conditions (lumière, distance, angle)
-- Clique "Train Model"
-- Clique "Export Model" → onglet "Tensorflow.js" → **"Download"** (pas Upload !)
-- Tu récupères un fichier ZIP
+> **Mise à jour automatique** — dès qu'une modification est poussée sur ce dépôt, l'application Android des utilisateurs est à jour au prochain chargement. Aucune mise à jour du store nécessaire.
 
-### 2. Mettre les fichiers dans le projet
-- Extrais le ZIP
-- Copie les 3 fichiers (`model.json`, `metadata.json`, `weights.bin`) dans le dossier `./model/`
+---
 
-### 3. Lancer avec Live Server (obligatoire)
-- Ouvre le dossier dans VS Code
-- Lance Live Server (clic droit sur index.html → "Open with Live Server")
-- L'app s'ouvre sur http://127.0.0.1:5500
+## 📂 Structure du projet
 
-**Ne pas ouvrir index.html directement dans le navigateur** (erreur CORS)
+```
+/
+├── index.html          # Interface complète (Dashboard, Scanner, Atelier)
+├── app.js              # Logique applicative, base de données, IA, thèmes
+├── style.css           # Design system avec variables CSS pour les thèmes
+├── /image/             # Avatars des œuvres et icônes
+└── /model/
+    ├── model.json
+    ├── metadata.json
+    └── weights.bin
+```
 
-## Adapter le projet à ta commune
+---
 
-Dans `app.js`, modifie la variable `database` :
-- Les **clés** (`"mairie"`, `"eglise"`, `"parc"`) doivent correspondre exactement
-  aux noms de classes Teachable Machine (en minuscules)
-- Les champs `title` et `desc` sont ce qui s'affiche dans la popup
+## 🔄 Ajouter une nouvelle œuvre
 
-Tu peux changer `SEUIL_CONFIANCE` (ligne ~22) :
-- `0.85` = 85% de certitude requise (recommandé)
-- Baisse à `0.70` si ça ne détecte pas assez souvent
-- Monte à `0.90` pour éviter les faux positifs
+### Étape 1 — Entraîner le modèle
+1. Ouvrir [Teachable Machine](https://teachablemachine.withgoogle.com/)
+2. Ajouter une nouvelle classe (ex : `sujet5`)
+3. Importer les photos de l'œuvre, entraîner, puis exporter le modèle
+
+### Étape 2 — Mettre à jour le modèle
+Remplacer les fichiers du dossier `/model/` par les nouveaux fichiers exportés (`model.json`, `metadata.json`, `weights.bin`).
+
+### Étape 3 — Mettre à jour la base de données
+Dans `app.js`, ajouter une entrée dans l'objet `database` :
+
+```javascript
+"sujet5": {
+    title: "Titre de l'œuvre",
+    desc: "Description complète de l'œuvre...",
+    avatar: "image/nouvelle_image.jpg",
+    author: "Prénom de l'élève",
+    classLevel: "CM2",
+    date: "Juin 2025"
+}
+```
+
+> ⚠️ La clé (`"sujet5"`) doit correspondre **exactement** au nom de la classe définie dans Teachable Machine, casse comprise.
+
+---
+
+## ⚠️ Reset & Sécurité
+
+Un bouton **Réinitialiser la progression** est disponible dans les paramètres (menu latéral). L'action est protégée par une confirmation pour éviter les suppressions accidentelles.
+
+---
+
+## 📄 Licence
+
+Projet pédagogique — École Albert Camus.
