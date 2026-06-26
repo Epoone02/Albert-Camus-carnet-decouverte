@@ -8,80 +8,145 @@
 </head>
 <body>
 
-    <header>
-        <div class="header-top">
-            <button id="btn-menu" class="icon-btn">☰</button>
-            <h1 id="app-title">Carnet de Explorateur</h1>
-            <div style="width: 40px;"></div> </div>
+<header>
+    <div class="header-top">
+        <button id="btn-menu" class="icon-btn">☰</button>
+        <h1 id="app-title">Carnet de Explorateur</h1>
+        <div style="width: 48px;"></div> </div>
 
-        <div class="progress-section">
-            <div class="score-text">Découvertes : <span id="captured-count">0</span> / <span id="total-count">0</span></div>
-            <div class="progress-bar-container">
-                <div id="progress-bar" class="progress-fill"></div>
+    <div class="progress-section">
+        <div class="score-text">Découvertes : <span id="captured-count">0</span> / <span id="total-count">0</span></div>
+        <div class="progress-bar-container">
+            <div id="progress-bar" class="progress-fill"></div>
+        </div>
+    </div>
+</header>
+
+<div id="sidebar" class="sidebar hidden">
+    <div class="sidebar-content">
+        <button id="btn-close-menu" class="icon-btn close-btn">✖</button>
+        <h2>Paramètres</h2>
+
+        <div class="settings-group">
+            <label for="username-input">Ton nom d'explorateur :</label>
+            <input type="text" id="username-input" placeholder="Ex: Léo">
+            <button id="btn-save-name" class="btn-small">Sauvegarder le nom</button>
+        </div>
+
+        <div class="settings-group">
+            <label>Apparence du carnet :</label>
+            <div class="theme-options">
+                <div class="theme-dot dot-default active" data-theme="default" title="Bleu Azur"></div>
+                <div class="theme-dot dot-dark" data-theme="theme-dark" title="Sombre & Rouge"></div>
+                <div class="theme-dot dot-violet" data-theme="theme-violet" title="Violet Galaxie"></div>
+                <div class="theme-dot dot-green" data-theme="theme-green" title="Vert Nature"></div>
+                <div class="theme-dot dot-custom" data-theme="theme-custom" title="Personnalisé"></div>
             </div>
+
+            <div id="custom-theme-pickers" class="hidden" style="margin-top: 15px;">
+                <div class="picker-group">
+                    <label>Ambiance Principale</label>
+                    <input type="range" id="hue-primary" min="0" max="360" value="200" class="spectrum-slider">
+                </div>
+                <div class="picker-group">
+                    <label>Nuance Secondaire</label>
+                    <input type="range" id="hue-secondary" min="0" max="360" value="190" class="spectrum-slider">
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-group">
+            <label>Outils :</label>
+            <button id="btn-open-pixelmaker" class="btn-small" style="background: var(--accent); color: white;">🎨 Créer un Pixel Art</button>
+        </div>
+
+        <div class="settings-group" style="margin-top: auto;">
+            <p class="warning-text">Zone de danger</p>
+            <button id="btn-reset" class="btn-reset">🔄 Réinitialiser la collection</button>
+        </div>
+    </div>
+    <div id="sidebar-overlay" class="overlay"></div>
+</div>
+
+<main id="pokedex-screen">
+    <div class="grid" id="collection-grid"></div>
+    <button id="btn-scan">📷 Scanner une œuvre</button>
+</main>
+
+<div id="detail-screen" class="hidden full-page">
+    <button id="btn-close-detail" class="back-btn">Retour</button>
+    <div class="detail-hero">
+        <img id="detail-img" src="" alt="Œuvre">
+    </div>
+    <div class="detail-content">
+        <h2 id="detail-title">Titre</h2>
+        <div class="artist-info">
+            <p>👤 <strong>Artiste :</strong> <span id="detail-author"></span> (<span id="detail-class"></span>)</p>
+            <p>📅 <strong>Date :</strong> <span id="detail-date"></span></p>
+        </div>
+        <p id="detail-desc" class="desc-text"></p>
+    </div>
+</div>
+
+<div id="scanner-screen" class="hidden full-page">
+    <div class="scanner-container">
+        <h2>Pointe vers l'œuvre</h2>
+        <div class="camera-box">
+            <video id="webcam" autoplay playsinline></video>
+        </div>
+        <div id="scan-status">Chargement de l'IA...</div>
+        <button id="btn-close-scan" class="btn-secondary">Annuler</button>
+    </div>
+</div>
+
+<div id="victory-screen" class="hidden full-page victory-bg">
+    <div class="victory-content">
+        <h1>🏆 INCROYABLE ! 🏆</h1>
+        <p id="victory-message">Félicitations, tu as découvert toutes les œuvres !</p>
+        <button id="btn-close-victory">Retour à la collection</button>
+    </div>
+</div>
+
+<div id="pixelmaker-screen" class="hidden full-page">
+    <header style="padding: 50px 15px 20px 15px;">
+        <div class="header-top">
+            <button id="btn-close-pixelmaker" class="icon-btn">✖</button>
+            <h1>Atelier Pixel Art</h1>
+            <div style="width: 48px;"></div>
         </div>
     </header>
 
-    <div id="sidebar" class="sidebar hidden">
-        <div class="sidebar-content">
-            <button id="btn-close-menu" class="icon-btn close-btn">✖</button>
-            <h2>Paramètres</h2>
-            
-            <div class="settings-group">
-                <label for="username-input">Ton nom d'explorateur :</label>
-                <input type="text" id="username-input" placeholder="Ex: Léo">
-                <button id="btn-save-name" class="btn-small">Sauvegarder le nom</button>
+    <div class="pixel-maker-container" style="padding: 20px;">
+        <div id="pixel-grid" class="pixel-grid"></div>
+
+        <div class="pixel-controls">
+            <div class="picker-group">
+                <label>Couleur du pinceau</label>
+                <input type="range" id="pixel-hue" min="0" max="360" value="0" class="spectrum-slider">
             </div>
 
-            <div class="settings-group" style="margin-top: auto;">
-                <p class="warning-text">Zone de danger</p>
-                <button id="btn-reset" class="btn-reset">🔄 Réinitialiser la collection</button>
+            <div class="palette-presets">
+                <div class="swatch" style="background: #000000;" data-color="#000000"></div>
+                <div class="swatch" style="background: #ffffff; border: 1px solid #ccc;" data-color="#ffffff"></div>
+                <div class="swatch" style="background: #ff0000;" data-color="#ff0000"></div>
+                <div class="swatch" style="background: #00ff00;" data-color="#00ff00"></div>
+                <div class="swatch" style="background: #0000ff;" data-color="#0000ff"></div>
+                <div class="swatch" style="background: #ffff00;" data-color="#ffff00"></div>
             </div>
+
+            <input type="text" id="project-name" placeholder="Nom du projet" style="margin-top: 20px;">
+            <button id="btn-save-pixel" style="margin-top: 10px;">💾 Sauvegarder</button>
         </div>
-        <div id="sidebar-overlay" class="overlay"></div>
+
+        <hr style="margin: 30px 0; border: none; border-top: 1px solid rgba(0,0,0,0.1);">
+
+        <h3>Mes Projets</h3>
+        <div id="pixel-projects-list" class="projects-grid"></div>
     </div>
+</div>
 
-    <main id="pokedex-screen">
-        <div class="grid" id="collection-grid"></div>
-        <button id="btn-scan">📷 Scanner une œuvre</button>
-    </main>
-
-    <div id="detail-screen" class="hidden full-page">
-        <button id="btn-close-detail" class="back-btn">⬅ Retour</button>
-        <div class="detail-hero">
-            <img id="detail-img" src="" alt="Œuvre">
-        </div>
-        <div class="detail-content">
-            <h2 id="detail-title">Titre</h2>
-            <div class="artist-info">
-                <p>👤 <strong>Artiste :</strong> <span id="detail-author"></span> (<span id="detail-class"></span>)</p>
-                <p>📅 <strong>Date :</strong> <span id="detail-date"></span></p>
-            </div>
-            <p id="detail-desc" class="desc-text"></p>
-        </div>
-    </div>
-
-    <div id="scanner-screen" class="hidden full-page">
-        <div class="scanner-container">
-            <h2>Pointe vers l'œuvre</h2>
-            <div class="camera-box">
-                <video id="webcam" autoplay playsinline></video>
-            </div>
-            <div id="scan-status">Chargement de l'IA...</div>
-            <button id="btn-close-scan" class="btn-secondary">Annuler</button>
-        </div>
-    </div>
-
-    <div id="victory-screen" class="hidden full-page victory-bg">
-        <div class="victory-content">
-            <h1>🏆 INCROYABLE ! 🏆</h1>
-            <p id="victory-message">Félicitations, tu as découvert toutes les œuvres !</p>
-            <button id="btn-close-victory">Retour à la collection</button>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
-    <script src="app.js?v=5"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+<script src="app.js?v=5"></script>
 </body>
 </html>
