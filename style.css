@@ -25,6 +25,18 @@ body.theme-dark {
     --accent: #EF233C;
 }
 
+body.theme-night {
+    --primary: #000000;
+    --primary-dark: #000000;
+    --secondary: #1A1A1A;
+    --bg-color: #000000;
+    --card-bg: #0D0D0D;
+    --text-color: #FFFFFF;
+    --header-text: #FFFFFF;
+    --status-bg: #1A1A1A;
+    --accent: #FFFFFF;
+}
+
 body.theme-violet {
     --primary: #7B2CBF;
     --primary-dark: #5A189A;
@@ -136,6 +148,7 @@ input[type="text"] { width: 100%; padding: 15px; border-radius: 12px; border: no
 
 .dot-default { --dot-primary: #0077B6; --dot-secondary: #F0F7FA; }
 .dot-dark { --dot-primary: #1B1B1E; --dot-secondary: #D90429; }
+.dot-night { --dot-primary: #000000; --dot-secondary: #FFFFFF; }
 .dot-violet { --dot-primary: #7B2CBF; --dot-secondary: #C77DFF; }
 .dot-green { --dot-primary: #2D6A4F; --dot-secondary: #D8F3DC; }
 .dot-custom {

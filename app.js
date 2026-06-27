@@ -1,56 +1,57 @@
+/**
+ * Application : Carnet de Découvertes Artistiques
+ * Description : Gestion de la collection d'œuvres, reconnaissance d'image et atelier pixel art.
+ */
+
 // ============================================================================
-// 📊 BASE DE DONNÉES DES ŒUVRES (FACILE À MODIFIER)
+// 📊 BASE DE DONNÉES DES ŒUVRES
 // ============================================================================
 const database = {
     "sujet1": {
-        title: "crane ",
-        desc: "crane un peu moche c'est un test",
+        title: "Le Crâne",
+        desc: "Une étude anatomique réalisée dans le cadre d'un projet artistique.",
         avatar: "image/crane.jpg",
-        author: "jsp qui",
-        classLevel: "chepa au pif",
-        date: "une anné"
+        author: "Anonyme",
+        classLevel: "Art et Design",
+        date: "2024"
     },
     "sujet2": {
-        title: "Stitch ",
-        desc: "Statut de stitch peinte oep tjr un test",
+        title: "Stitch",
+        desc: "Représentation stylisée du personnage célèbre en peinture.",
         avatar: "image/stitch.jpg",
-        author: "un boug random",
-        classLevel: "lezzzgoo",
-        date: "uneeeee annnééé"
+        author: "Artiste Local",
+        classLevel: "Arts Plastiques",
+        date: "2023"
     },
     "sujet3": {
-        title: "Bulbizarreee",
-        desc: "un pokemon mon garssss WOWOWOWWOO",
+        title: "Bulbizarre",
+        desc: "Une œuvre inspirée de la pop culture japonaise.",
         avatar: "image/bulbizare.jpg",
-        author: "je sais tjr pas",
-        classLevel: "j'aimerais savoir",
-        date: "we are ch.... NAAAANN"
+        author: "Anonyme",
+        classLevel: "Arts Visuels",
+        date: "2024"
     },
     "sujet4": {
-        title: "premier pixel",
-        desc: "i did it bro",
+        title: "Composition Pixel",
+        desc: "Première exploration de l'art numérique pointilliste.",
         avatar: "image/pixelart.png",
-        author: "Moi le goat",
-        classLevel: "ecole inge",
-        date: "25/06/2026"
+        author: "Explorateur",
+        classLevel: "Numérique",
+        date: "2025"
     }
 };
 
-// Image par défaut quand l'œuvre n'est pas encore découverte
-const UNKNOWN_IMG = "image/interrogation.png"
-
+const UNKNOWN_IMG = "image/interrogation.png";
 const SEUIL_CONFIANCE = 0.85;
-
-// CORRECTION 1 : Ajout de "model/" à la fin de l'URL
 const MODEL_PATH = "https://epoone02.github.io/Albert-Camus-carnet-decouverte/model/";
 
 let model = null;
 let webcamStream = null;
 let predictionLoop = null;
 
-// ==========================================
+// ============================================================================
 // INITIALISATION
-// ==========================================
+// ============================================================================
 window.addEventListener('DOMContentLoaded', () => {
     loadUsername();
     loadTheme();
@@ -58,9 +59,9 @@ window.addEventListener('DOMContentLoaded', () => {
     checkSavedItems();
 });
 
-// ==========================================
-// GESTION DU NOM ET THÈME
-// ==========================================
+// ============================================================================
+// GESTION DU PROFIL ET THÈME
+// ============================================================================
 function loadUsername() {
     const savedName = localStorage.getItem("app_username") || "Explorateur";
     document.getElementById("app-title").innerText = "Carnet de " + savedName;
@@ -69,97 +70,70 @@ function loadUsername() {
 
 function loadTheme() {
     const savedTheme = localStorage.getItem("app_theme") || "default";
-
-    // Charger les teintes personnalisées si elles existent
     if (localStorage.getItem("custom_hue_primary")) {
         document.getElementById("hue-primary").value = localStorage.getItem("custom_hue_primary");
     }
     if (localStorage.getItem("custom_hue_secondary")) {
         document.getElementById("hue-secondary").value = localStorage.getItem("custom_hue_secondary");
     }
-
     updateCustomVariables();
     applyTheme(savedTheme);
 }
 
 function applyTheme(theme) {
-    // Supprime tous les thèmes existants
-    document.body.classList.remove("theme-dark", "theme-violet", "theme-green", "theme-custom");
+    document.body.classList.remove("theme-dark", "theme-night", "theme-violet", "theme-green", "theme-custom");
+    if (theme !== "default") document.body.classList.add(theme);
 
-    // Applique le nouveau si ce n'est pas le défaut
-    if (theme !== "default") {
-        document.body.classList.add(theme);
-    }
-
-    // Afficher/Cacher les curseurs de spectre pour le mode personnalisé
     const pickers = document.getElementById("custom-theme-pickers");
-    if (theme === "theme-custom") {
-        pickers.classList.remove("hidden");
-    } else {
-        pickers.classList.add("hidden");
-    }
+    theme === "theme-custom" ? pickers.classList.remove("hidden") : pickers.classList.add("hidden");
 
-    // Met à jour l'état visuel des pastilles
     document.querySelectorAll('.theme-dot').forEach(dot => {
         dot.classList.toggle('active', dot.dataset.theme === theme);
     });
 }
 
 function updateCustomVariables() {
-    const huePrimary = document.getElementById("hue-primary").value;
-    const hueSecondary = document.getElementById("hue-secondary").value;
-
-    const primaryColor = `hsl(${huePrimary}, 70%, 40%)`;
-    const primaryDark = `hsl(${huePrimary}, 70%, 30%)`;
-    const secondaryColor = `hsl(${hueSecondary}, 80%, 75%)`;
-
-    document.documentElement.style.setProperty('--custom-primary', primaryColor);
-    document.documentElement.style.setProperty('--custom-primary-dark', primaryDark);
-    document.documentElement.style.setProperty('--custom-secondary', secondaryColor);
-
-    // Sauvegarder
-    localStorage.setItem("custom_hue_primary", huePrimary);
-    localStorage.setItem("custom_hue_secondary", hueSecondary);
+    const h1 = document.getElementById("hue-primary").value;
+    const h2 = document.getElementById("hue-secondary").value;
+    document.documentElement.style.setProperty('--custom-primary', `hsl(${h1}, 70%, 40%)`);
+    document.documentElement.style.setProperty('--custom-primary-dark', `hsl(${h1}, 70%, 30%)`);
+    document.documentElement.style.setProperty('--custom-secondary', `hsl(${h2}, 80%, 75%)`);
+    localStorage.setItem("custom_hue_primary", h1);
+    localStorage.setItem("custom_hue_secondary", h2);
 }
 
-// Listeners pour les pastilles de thème
 document.querySelectorAll('.theme-dot').forEach(dot => {
     dot.addEventListener('click', () => {
-        const selectedTheme = dot.dataset.theme;
-        localStorage.setItem("app_theme", selectedTheme);
-        applyTheme(selectedTheme);
+        const theme = dot.dataset.theme;
+        localStorage.setItem("app_theme", theme);
+        applyTheme(theme);
     });
 });
 
-// Listeners pour les curseurs de spectre
 document.getElementById("hue-primary").addEventListener("input", updateCustomVariables);
 document.getElementById("hue-secondary").addEventListener("input", updateCustomVariables);
 
 document.getElementById("btn-save-name").addEventListener("click", () => {
-    const newName = document.getElementById("username-input").value.trim() || "Explorateur";
-    localStorage.setItem("app_username", newName);
+    const name = document.getElementById("username-input").value.trim() || "Explorateur";
+    localStorage.setItem("app_username", name);
     loadUsername();
     toggleSidebar(false);
 });
 
-// ==========================================
-// MENU LATÉRAL (SIDEBAR)
-// ==========================================
+// ============================================================================
+// NAVIGATION ET SIDEBAR
+// ============================================================================
 function toggleSidebar(show) {
     const sidebar = document.getElementById("sidebar");
-    if (show) {
-        sidebar.classList.remove("hidden");
-    } else {
-        sidebar.classList.add("hidden");
-    }
+    show ? sidebar.classList.remove("hidden") : sidebar.classList.add("hidden");
 }
 document.getElementById("btn-menu").addEventListener("click", () => toggleSidebar(true));
 document.getElementById("btn-close-menu").addEventListener("click", () => toggleSidebar(false));
 document.getElementById("sidebar-overlay").addEventListener("click", () => toggleSidebar(false));
 
-// ==========================================
-// AFFICHAGE & PROGRESSION
-// ==========================================
+// ============================================================================
+// GESTION DE LA COLLECTION
+// ============================================================================
 function generateGrid() {
     const grid = document.getElementById('collection-grid');
     grid.innerHTML = '';
@@ -169,8 +143,6 @@ function generateGrid() {
         const card = document.createElement('div');
         card.className = 'card locked';
         card.id = `item-${id}`;
-
-        // Par défaut : Inconnu avec l'image mystère
         card.innerHTML = `
             <img src="${UNKNOWN_IMG}" class="pixel-avatar" alt="Inconnu">
             <h3>À découvrir</h3>
@@ -182,22 +154,18 @@ function generateGrid() {
 
 function checkSavedItems() {
     let count = 0;
-    const total = Object.keys(database).length;
-
-    Object.keys(database).forEach(id => {
+    const ids = Object.keys(database);
+    ids.forEach(id => {
         if (localStorage.getItem("art_scanned_" + id) === "true") {
             unlockCard(id);
             count++;
         }
     });
-
-    // Mise à jour de la barre et du texte
     document.getElementById('captured-count').innerText = count;
-    const progressPercent = total === 0 ? 0 : (count / total) * 100;
-    document.getElementById('progress-bar').style.width = progressPercent + "%";
+    const percent = ids.length === 0 ? 0 : (count / ids.length) * 100;
+    document.getElementById('progress-bar').style.width = percent + "%";
 
-    // Vérification de la victoire
-    if (count === total && total > 0 && sessionStorage.getItem("victory_shown") !== "true") {
+    if (count === ids.length && ids.length > 0 && sessionStorage.getItem("victory_shown") !== "true") {
         setTimeout(showVictory, 1000);
     }
 }
@@ -206,21 +174,16 @@ function unlockCard(id) {
     const card = document.getElementById(`item-${id}`);
     const data = database[id];
     if (!card) return;
-
     card.classList.remove('locked');
     card.innerHTML = `
         <img src="${data.avatar}" class="pixel-avatar" alt="${data.title}" onerror="this.src='${UNKNOWN_IMG}'">
         <h3>${data.title}</h3>
         <span class="status unlocked">Consultable</span>
     `;
-
     card.onclick = () => openDetailView(id);
     card.style.cursor = "pointer";
 }
 
-// ==========================================
-// VUE DÉTAIL PLEINE PAGE
-// ==========================================
 function openDetailView(id) {
     const data = database[id];
     document.getElementById("detail-img").src = data.avatar;
@@ -229,21 +192,20 @@ function openDetailView(id) {
     document.getElementById("detail-class").innerText = data.classLevel;
     document.getElementById("detail-date").innerText = data.date;
     document.getElementById("detail-desc").innerText = data.desc;
-
-    document.getElementById("pokedex-screen").classList.add("hidden");
+    document.getElementById("collection-screen").classList.add("hidden");
     document.getElementById("detail-screen").classList.remove("hidden");
 }
 
 document.getElementById("btn-close-detail").addEventListener("click", () => {
     document.getElementById("detail-screen").classList.add("hidden");
-    document.getElementById("pokedex-screen").classList.remove("hidden");
+    document.getElementById("collection-screen").classList.remove("hidden");
 });
 
-// ==========================================
-// SCANNER CAMÉRA
-// ==========================================
+// ============================================================================
+// RECONNAISSANCE VISUELLE (SCANNER)
+// ============================================================================
 document.getElementById('btn-scan').addEventListener('click', async () => {
-    document.getElementById('pokedex-screen').classList.add('hidden');
+    document.getElementById('collection-screen').classList.add('hidden');
     document.getElementById('scanner-screen').classList.remove('hidden');
     await startScanner();
 });
@@ -262,13 +224,13 @@ async function startScanner() {
         setStatus("Chargement de l'IA...");
         try {
             model = await tmImage.load(MODEL_PATH + "model.json", MODEL_PATH + "metadata.json");
-            setStatus("✅ Pointe vers une œuvre !");
+            setStatus("✅ Prêt pour le scan !");
         } catch (err) {
-            setStatus("❌ Erreur : " + err.message);
+            setStatus("❌ Erreur modèle : " + err.message);
             return;
         }
     } else {
-        setStatus("✅ Pointe vers une œuvre !");
+        setStatus("✅ Prêt pour le scan !");
     }
     predictionLoop = setInterval(predict, 500);
 }
@@ -276,29 +238,25 @@ async function startScanner() {
 async function predict() {
     const video = document.getElementById('webcam');
     if (!model || video.readyState < 2) return;
-
     const predictions = await model.predict(video);
     const best = predictions.reduce((a, b) => a.probability > b.probability ? a : b);
 
     if (best.probability >= SEUIL_CONFIANCE) {
         let id = best.className.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "_");
         if (!database[id]) id = best.className.toLowerCase().trim();
-
         if (database[id]) {
             if (localStorage.getItem("art_scanned_" + id) === "true") {
                 setStatus("⭐ Déjà découvert : " + database[id].title);
             } else {
                 stopScanner();
                 localStorage.setItem("art_scanned_" + id, "true");
-
-                // Ferme le scanner, met à jour la progression et ouvre la fiche
                 document.getElementById('scanner-screen').classList.add('hidden');
                 checkSavedItems();
                 openDetailView(id);
             }
         }
     } else {
-        setStatus("✅ Pointe vers une œuvre !");
+        setStatus("✅ Prêt pour le scan !");
     }
 }
 
@@ -306,33 +264,33 @@ function setStatus(msg) { document.getElementById('scan-status').innerText = msg
 
 function stopScanner() {
     clearInterval(predictionLoop);
-    if (webcamStream) { webcamStream.getTracks().forEach(t => t.stop()); }
+    if (webcamStream) webcamStream.getTracks().forEach(t => t.stop());
 }
 
 document.getElementById('btn-close-scan').addEventListener('click', () => {
     stopScanner();
     document.getElementById('scanner-screen').classList.add('hidden');
-    document.getElementById('pokedex-screen').classList.remove('hidden');
+    document.getElementById('collection-screen').classList.remove('hidden');
 });
 
-// ==========================================
+// ============================================================================
 // ÉCRAN DE VICTOIRE
-// ==========================================
+// ============================================================================
 function showVictory() {
-    sessionStorage.setItem("victory_shown", "true"); // Pour ne pas l'afficher en boucle
+    sessionStorage.setItem("victory_shown", "true");
     const name = localStorage.getItem("app_username") || "Explorateur";
-    document.getElementById("victory-message").innerText = `Félicitations ${name}, tu as découvert l'intégralité du patrimoine artistique !`;
-    document.getElementById('pokedex-screen').classList.add('hidden');
+    document.getElementById("victory-message").innerText = `Félicitations ${name}, tu as découvert l'intégralité de la collection !`;
+    document.getElementById('collection-screen').classList.add('hidden');
     document.getElementById('victory-screen').classList.remove('hidden');
 }
 
 document.getElementById("btn-close-victory").addEventListener("click", () => {
     document.getElementById("victory-screen").classList.add("hidden");
-    document.getElementById("pokedex-screen").classList.remove("hidden");
+    document.getElementById("collection-screen").classList.remove("hidden");
 });
 
 // ============================================================================
-// 🎨 ATELIER PIXEL ART
+// ATELIER PIXEL ART
 // ============================================================================
 let currentColor = "#000000";
 let currentProjectId = null;
@@ -340,7 +298,7 @@ const pixelGrid = document.getElementById("pixel-grid");
 
 document.getElementById("btn-open-pixelmaker").addEventListener("click", () => {
     toggleSidebar(false);
-    document.getElementById("pokedex-screen").classList.add("hidden");
+    document.getElementById("collection-screen").classList.add("hidden");
     document.getElementById("pixelmaker-screen").classList.remove("hidden");
     resetPixelMaker();
     loadPixelProjects();
@@ -348,7 +306,7 @@ document.getElementById("btn-open-pixelmaker").addEventListener("click", () => {
 
 document.getElementById("btn-close-pixelmaker").addEventListener("click", () => {
     document.getElementById("pixelmaker-screen").classList.add("hidden");
-    document.getElementById("pokedex-screen").classList.remove("hidden");
+    document.getElementById("collection-screen").classList.remove("hidden");
 });
 
 function resetPixelMaker() {
@@ -362,19 +320,12 @@ function initPixelGrid(savedColors = null) {
     for (let i = 0; i < 100; i++) {
         const cell = document.createElement("div");
         cell.className = "pixel-cell";
-        if (savedColors && savedColors[i]) {
-            cell.style.backgroundColor = savedColors[i];
-        } else {
-            cell.style.backgroundColor = "rgb(255, 255, 255)";
-        }
-        cell.addEventListener("click", () => {
-            cell.style.backgroundColor = currentColor;
-        });
+        cell.style.backgroundColor = (savedColors && savedColors[i]) ? savedColors[i] : "rgb(255, 255, 255)";
+        cell.addEventListener("click", () => cell.style.backgroundColor = currentColor);
         pixelGrid.appendChild(cell);
     }
 }
 
-// Gestion des couleurs
 document.getElementById("pixel-hue").addEventListener("input", (e) => {
     currentColor = `hsl(${e.target.value}, 100%, 50%)`;
 });
@@ -387,28 +338,19 @@ document.querySelectorAll(".swatch").forEach(swatch => {
     });
 });
 
-// Sauvegarde
 document.getElementById("btn-save-pixel").addEventListener("click", () => {
     const name = document.getElementById("project-name").value.trim() || "Projet sans nom";
-    const cells = document.querySelectorAll(".pixel-cell");
-    const colors = Array.from(cells).map(c => c.style.backgroundColor);
-
+    const colors = Array.from(document.querySelectorAll(".pixel-cell")).map(c => c.style.backgroundColor);
     let projects = JSON.parse(localStorage.getItem("pixel_projects") || "[]");
 
     if (currentProjectId) {
-        const index = projects.findIndex(p => p.id === currentProjectId);
-        if (index !== -1) {
-            projects[index].name = name;
-            projects[index].colors = colors;
-        }
+        const idx = projects.findIndex(p => p.id === currentProjectId);
+        if (idx !== -1) { projects[idx].name = name; projects[idx].colors = colors; }
     } else {
-        const project = { id: Date.now(), name, colors };
-        projects.push(project);
+        projects.push({ id: Date.now(), name, colors });
     }
-
     localStorage.setItem("pixel_projects", JSON.stringify(projects));
     resetPixelMaker();
-    alert("Projet enregistré !");
     loadPixelProjects();
 });
 
@@ -416,11 +358,9 @@ function loadPixelProjects() {
     const list = document.getElementById("pixel-projects-list");
     list.innerHTML = "";
     const projects = JSON.parse(localStorage.getItem("pixel_projects") || "[]");
-
     projects.forEach(p => {
         const card = document.createElement("div");
         card.className = "project-card";
-
         const preview = document.createElement("div");
         preview.className = "project-preview";
         p.colors.forEach(c => {
@@ -429,10 +369,8 @@ function loadPixelProjects() {
             pc.style.backgroundColor = c;
             preview.appendChild(pc);
         });
-
         card.innerHTML = `<h4>${p.name}</h4>`;
         card.prepend(preview);
-
         card.onclick = () => {
             currentProjectId = p.id;
             document.getElementById("project-name").value = p.name;
@@ -448,14 +386,8 @@ function loadPixelProjects() {
         btnCopy.style.color = "var(--primary)"; btnCopy.innerText = "Copier";
         btnCopy.onclick = (e) => {
             e.stopPropagation();
-            const newProject = {
-                id: Date.now(),
-                name: p.name + " (Copie)",
-                colors: [...p.colors]
-            };
-            let projs = JSON.parse(localStorage.getItem("pixel_projects") || "[]");
-            projs.push(newProject);
-            localStorage.setItem("pixel_projects", JSON.stringify(projs));
+            projects.push({ id: Date.now(), name: p.name + " (Copie)", colors: [...p.colors] });
+            localStorage.setItem("pixel_projects", JSON.stringify(projects));
             loadPixelProjects();
         };
 
@@ -464,29 +396,35 @@ function loadPixelProjects() {
         btnDel.onclick = (e) => {
             e.stopPropagation();
             if(confirm("Supprimer ce projet ?")) {
-                let projs = JSON.parse(localStorage.getItem("pixel_projects") || "[]");
-                projs = projs.filter(pr => pr.id !== p.id);
-                localStorage.setItem("pixel_projects", JSON.stringify(projs));
+                const updated = projects.filter(pr => pr.id !== p.id);
+                localStorage.setItem("pixel_projects", JSON.stringify(updated));
                 if (currentProjectId === p.id) resetPixelMaker();
                 loadPixelProjects();
             }
         };
-
         actions.appendChild(btnCopy); actions.appendChild(btnDel);
         card.appendChild(actions);
         list.appendChild(card);
     });
 }
 
-// ==========================================
-// RÉINITIALISATION
-// ==========================================
+// ============================================================================
+// RÉINITIALISATION COMPLÈTE
+// ============================================================================
 document.getElementById('btn-reset').addEventListener('click', () => {
-    if (confirm("Voulez-vous vraiment effacer toute la collection ?")) {
-        Object.keys(database).forEach(id => localStorage.removeItem("art_scanned_" + id));
-        sessionStorage.removeItem("victory_shown");
+    if (confirm("⚠️ Voulez-vous vraiment tout réinitialiser ? (Collection, Nom, Thèmes et Pixel Art seront effacés)")) {
+        // Efface absolument toutes les données stockées
+        localStorage.clear();
+        sessionStorage.clear();
+
+        // Réactualise toute l'interface avec les valeurs par défaut
         toggleSidebar(false);
+        loadUsername();
+        loadTheme();
         generateGrid();
         checkSavedItems();
+        loadPixelProjects();
+
+        alert("Le carnet a été entièrement réinitialisé.");
     }
 });
